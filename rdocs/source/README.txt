@@ -1,0 +1,3 @@
+GERENTES: O arquivo packages.R contém as funções de tema e cores da ESTAT para gráficos, além de carregar alguns dos pacotes mais comumente utilizados. Além disso, define fonte e tamanho de letras em gráficos para o padrão ABNT. Não altere o código contido nele, salvo casos específicos necessários, e se souber o que está fazendo!!
+
+ALOCADOS: O arquivo padraograficos.R contido nesta pasta traz os códigos necessários para elaboração dos principais gráficos utilizados em nossas análises. Copiem os códigos nele contidos para o arquivo .R com seu nome e faça as alterações cabíveis em sua análise, caso necessário.

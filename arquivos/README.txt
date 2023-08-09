@@ -1,0 +1,3 @@
+GERENTES: Insira nessa pasta todos os arquivos compartilhados com cliente, alocados, etc. Contrato, proposta, arquivos enviados pela cliente, tudo que possa ser passível de consulta em algum momento. PREFERENCIALMENTE, utilize o arquivo alocacao.txt para inserir as análises a serem executadas conforme modelo, para consulta dos alocados quando necessário. NOMEIE os arquivos com nomes que auxiliem a consulta.
+
+ALOCADOS: Procurem nessa pasta arquivos pertinentes para sua análise antes de pedir ajuda, evitando assim possíveis redundâncias de arquivos já compartilhados.

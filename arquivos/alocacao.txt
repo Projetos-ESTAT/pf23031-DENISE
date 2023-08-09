@@ -1,0 +1,79 @@
+|----------------------------------------------------------|
+|----------- Etapa 2: Análise da População ----------------|
+|------------- Análise geral da população -----------------|
+|----------------------------------------------------------|
+|arquivo: BD para analise estatistica-1                    |
+|planilha: COPSOQIII                                       |
+|Responsável: Davi Esmeraldo                               |
+|----------------------------------------------------------|
+|Análise   | Coluna correspondente no BD                   |
+|----------------------------------------------------------|
+|função    | Função                                        |
+|sexo      | Sexo                                          |
+|diretoria | Diretoria Geral                               |
+|gerência  | Gerência Geral                                |
+|gerência  | Gerência Executiva                            |
+|lotação   | Lotação                                       |
+|regime    | Regime de Trabalho                            |
+|----------------------------------------------------------|
+
+
+|----------------------------------------------------------|
+|------------- Etapa 2: Análise da População --------------|
+|----------- Análise em agrupamento por cargo -------------|
+|----------------------------------------------------------|
+|arquivo: banco importante                                 |
+|planilha: COPSOQIII_CORE                                  |
+|Responsável: Ana                                          |
+|----------------------------------------------------------|
+|Análise     | Coluna correspondente no BD                 |
+|----------------------------------------------------------|
+|cargo       | Função                                      |
+|sexo        | Sexo                                        |
+|saúde média | 'Saúde global' (dentro da coluna Atributo)  |
+|total médio | Total Geral                                 |
+|----------------------------------------------------------|
+
+
+|----------------------------------------------------------|
+|----------- Etapa 3: Validação do questionário -----------|
+|----------------------------------------------------------|
+|arquivo: banco importante                                 |
+|planilha: COPSOQIII_CORE                                  |
+|Responsável: Letícia                                      |
+|----------------------------------------------------------|
+|Análise            | Coluna correspondente no BD          |
+|----------------------------------------------------------|
+|dimensão           | Atributo(cada fator é uma 'dimensão')|
+|média              | Valor                                |
+|desvio padrão      | Valor                                |
+|alpha de Cronbach* | Valor                                |
+|Dist. Qui-²*       | Valor                                |
+|p-valor*           | Valor                                |
+|CFI*               | Valor                                |
+|TLI*               | Valor                                |
+|RMSEA*             | Valor                                |
+|IC*                | Valor                                |
+|----------------------------------------------------------|
+|* = Multivariada  (criar o 'template')                    |
+|----------------------------------------------------------|
+
+|----------------------------------------------------------|
+|----------- Etapa 3: Validação do questionário -----------|
+|----------------------------------------------------------|
+|arquivo: banco importante                                 |
+|planilha: COPSOQIII_CORE                                  |
+|Responsável: Johnata                                      |
+|----------------------------------------------------------|
+|Análise            | Coluna correspondente no BD          |
+|----------------------------------------------------------|
+|dimensão           | Atributo(cada fator é uma 'dimensão')|
+|alpha de Cronbach  | Valor                                |
+|Dist. Qui-²        | Valor                                |
+|p-valor            | Valor                                |
+|CFI                | Valor                                |
+|TLI                | Valor                                |
+|RMSEA              | Valor                                |
+|IC                 | Valor                                |
+|----------------------------------------------------------|
+
