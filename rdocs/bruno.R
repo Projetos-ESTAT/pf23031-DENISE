@@ -65,14 +65,21 @@ df[1:684, 4] <- "AMP"
 df[685:1368, 4] <- "LAT"
 
 rm(INFRA,SUPRA,amp,AMP,infra_amp,infra_lat,lat,LAT,musculo,supra_amp,supra_lat,
-   tipo,valores,vetor)
+   tipo,valores)
+
+df$tipo <- factor(df$tipo)
+df$musculo <- factor(df$musculo)
+df$amp_lat <- factor(df$amp_lat)
 
 saveRDS(df,"banco/df.rds")
+
+rm(df)
 
 # ---------------------------------------------------------------------------- #
 
 
-# 2.0) Análises ----
 
+
+# 2.0) Análises ----
 
 
