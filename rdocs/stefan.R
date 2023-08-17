@@ -45,6 +45,7 @@ ggplot(SupraLat) +  aes(x = musculo,y = valores) +
   labs(x = "Músculo", y = "Latência") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
+ggsave("resultados/Supra/SupraLat_Box.pdf", width = 158, height = 93, units = "mm")
 
 #Com transformação
 ggplot(SupraLat) +  aes(x = musculo,y = log(valores)) +
@@ -52,10 +53,10 @@ ggplot(SupraLat) +  aes(x = musculo,y = log(valores)) +
   stat_summary(
     fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
   ) +
-  labs(x = "Músculo", y = "Latência") +
+  labs(x = "Músculo", y = "Logarítimo Natural da Latência") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
-#ggsave("resultados/Supra/SupraLat_Box.pdf", width = 158, height = 93, units = "mm")
+ggsave("resultados/Supra/SupraLat_BoxLog.pdf", width = 158, height = 93, units = "mm")
 
 
 #Anova
@@ -121,6 +122,7 @@ ggplot(SupraAmp) +  aes(x = musculo,y = valores) +
   labs(x = "Músculo", y = "Amplitude") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
+ggsave("resultados/Supra/SupraAmp_Box.pdf", width = 158, height = 93, units = "mm")
 
 #Com transformação
 ggplot(SupraAmp) +  aes(x = musculo,y = log(valores)) +
@@ -131,7 +133,7 @@ ggplot(SupraAmp) +  aes(x = musculo,y = log(valores)) +
   labs(x = "Músculo", y = "Logarítimo Natural da Amplitude") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
-#ggsave("resultados/Supra/SupraAmp_Box.pdf", width = 158, height = 93, units = "mm")
+ggsave("resultados/Supra/SupraAmp_BoxLog.pdf", width = 158, height = 93, units = "mm")
 
 
 #Anova
