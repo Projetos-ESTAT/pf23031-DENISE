@@ -1,5 +1,5 @@
 source("rdocs/source/packages.R")
-pacman::p_load(DescTools, asbio, gridExtra, lmtest)
+pacman::p_load(DescTools, asbio, gridExtra, lmtest,agricolae)
 
 # ---------------------------------------------------------------------------- #
 
@@ -45,7 +45,7 @@ ggplot(SupraLat) +  aes(x = musculo,y = valores) +
   labs(x = "Músculo", y = "Latência") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
-ggsave("resultados/Supra/SupraLat_Box.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Supra/SupraLat_Box.pdf", width = 158, height = 93, units = "mm")
 
 #Com transformação
 ggplot(SupraLat) +  aes(x = musculo,y = log(valores)) +
@@ -56,7 +56,7 @@ ggplot(SupraLat) +  aes(x = musculo,y = log(valores)) +
   labs(x = "Músculo", y = "Logaritmo Natural da Latência") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
-ggsave("resultados/Supra/SupraLat_BoxLog.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Supra/SupraLat_BoxLog.pdf", width = 158, height = 93, units = "mm")
 
 
 #Anova
@@ -110,6 +110,32 @@ ggplot(ResLatSup) +
 
 #Pressupostos Rejeitados sem transformação (Normalidade), aceitos com transformação log (Obaaa)
 
+#estimações
+for (i in unique(SupraLat$musculo)) {
+  a <- shapiro.test(SupraLat$valores[SupraLat$musculo==i])$p.value
+  b <- shapiro.test(log(SupraLat$valores[SupraLat$musculo==i]))$p.value
+  if(a<0.05 & b>0.05)
+  {print(paste(str(i), "Normal apenas com transformação log"))}
+  if(a<0.05 & b<0.05)
+  {print(paste(str(i), "Não Normal mesmo com transformação log"))}
+}
+
+LSDSupraLat <- LSD.test(AnovaLatSup, "as.factor(SupraLat$musculo)")
+LSDSupraLat
+SupraLatEst <- exp(LSDSupraLat$means[c(1,5,6)])
+SupraLatEst$musculo <- rownames(SupraLatEst)
+
+#Gráfico com latência média e IC
+ggplot(SupraLatEst) +
+  aes(x = musculo, y = `log(SupraLat$valores)`) +
+  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
+  geom_errorbar(aes(ymin=LCL, ymax=UCL), width=.2) +
+  labs(x = "Músculo", y = "Latência") +
+  theme_estat()
+#ggsave("resultados/Supra/SupraLat_MedDP.pdf", width = 158, height = 93, units = "mm")
+
+
+
 
 #Amplitude (Precisa de uma análise do log)
 SupraAmp <- Supra %>% filter(amp_lat == "AMP")
@@ -123,7 +149,7 @@ ggplot(SupraAmp) +  aes(x = musculo,y = valores) +
   labs(x = "Músculo", y = "Amplitude") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
-ggsave("resultados/Supra/SupraAmp_Box.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Supra/SupraAmp_Box.pdf", width = 158, height = 93, units = "mm")
 
 #Com transformação
 ggplot(SupraAmp) +  aes(x = musculo,y = log(valores)) +
@@ -134,7 +160,7 @@ ggplot(SupraAmp) +  aes(x = musculo,y = log(valores)) +
   labs(x = "Músculo", y = "Logaritmo Natural da Amplitude") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
-ggsave("resultados/Supra/SupraAmp_BoxLog.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Supra/SupraAmp_BoxLog.pdf", width = 158, height = 93, units = "mm")
 
 
 #Anova
@@ -187,6 +213,32 @@ ggplot(ResAmpSup) +
 #ggsave("resultados/Supra/SupraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
 
 #Pressupostos Rejeitados sem transformação, aceitos com transformação log (Obaaa)
+
+#estimações
+for (i in unique(SupraAmp$musculo)) {
+  a <- shapiro.test(SupraAmp$valores[SupraAmp$musculo==i])$p.value
+  b <- shapiro.test(log(SupraAmp$valores[SupraAmp$musculo==i]))$p.value
+  if(a<0.05 & b>0.05)
+  {print(paste(str(i), "Normal apenas com transformação log"))}
+  if(a<0.05 & b<0.05)
+  {print(paste(str(i), "Não Normal mesmo com transformação log"))}
+}
+
+LSDSupraAmp <- LSD.test(AnovaAmpSup, "as.factor(SupraAmp$musculo)")
+LSDSupraAmp
+SupraAmpEst <- exp(LSDSupraAmp$means[c(1,5,6)])
+SupraAmpEst$musculo <- rownames(SupraAmpEst)
+
+#Gráfico com latência média e IC
+ggplot(SupraAmpEst) +
+  aes(x = musculo, y = `log(SupraAmp$valores)`) +
+  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
+  geom_errorbar(aes(ymin=LCL, ymax=UCL), width=.2) +
+  labs(x = "Músculo", y = "Amplitude") +
+  theme_estat()
+#ggsave("resultados/Supra/SupraLat_MedDP.pdf", width = 158, height = 93, units = "mm")
+
+
 
 
 #Reprodutividade
