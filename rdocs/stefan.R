@@ -32,28 +32,92 @@ Supra <- Banco %>% filter(tipo == "supra")
 SupraLat <- Supra %>% filter(amp_lat == "LAT")
 AnovaLatSup <- aov(SupraLat$valores ~ as.factor(SupraLat$musculo))
 summary(AnovaLatSup)
-par(mfrow=c(1,3))
 
 #Pressupostos (Usar resíduos Studentizados)
 Res <- rstudent(AnovaLatSup)
 yfit <- fitted(AnovaLatSup)
-ResLatSup <- data.frame(Res=Res,yfit=yfit)
+ResLatSup <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaLatSup$model[[2]])
 #Normalidade
+shapiro.test(ResLatSup$Res)
 ggplot(ResLatSup) +
-  aes(x = yfit, y = Res) +
-  geom_point(colour = "black", size = 3) +
-  labs(
-    x = "valores ajustados da resposta",
-    y = "resíduos Studentizados"
-  ) +
+  aes(sample = Res) +
+  stat_qq(colour = "#A11D21", size = 3) + stat_qq_line() +
   theme_estat()
-#ggsave("disp_ResValaj.pdf", width = 158, height = 93, units = "mm")
-shapiro.test(ResLatSup)
-qqnorm(ResLatSup)
-qqline(ResLatSup)
+#ggsave("SupraLat_Norm.pdf", width = 158, height = 93, units = "mm")
 
 #Independencia
-plot(ResLatSup)
+ggplot(ResLatSup) +
+  aes(x = 1:length(Res), y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Observação",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("SupraLat_Ind.pdf", width = 158, height = 93, units = "mm")
 
 #Homocedasticidade
-plot(ResLatSup, AnovaLatSup$fitted.values)
+ggplot(ResLatSup) +
+  aes(x = Musculo, y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Musculo",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("SupraLat_Homo.pdf", width = 158, height = 93, units = "mm")
+
+
+
+#Amplitude (Precisa de uma análise diferente)
+#Anova
+SupraAmp <- Supra %>% filter(amp_lat == "AMP")
+AnovaAmpSup <- aov(SupraAmp$valores ~ as.factor(SupraAmp$musculo))
+summary(AnovaAmpSup)
+
+#Pressupostos (Usar resíduos Studentizados)
+Res <- rstudent(AnovaAmpSup)
+yfit <- fitted(AnovaAmpSup)
+ResAmpSup <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaAmpSup$model[[2]])
+#Normalidade
+shapiro.test(ResAmpSup$Res)
+ggplot(ResAmpSup) +
+  aes(sample = Res) +
+  stat_qq(colour = "#A11D21", size = 3) + stat_qq_line() +
+  theme_estat()
+#ggsave("SupraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
+
+#Independencia
+ggplot(ResAmpSup) +
+  aes(x = 1:length(Res), y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Observação",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("SupraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
+
+#Homocedasticidade
+ggplot(ResAmpSup) +
+  aes(x = Musculo, y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Musculo",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("SupraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
+#Pressupostos Rejeitados (Obaaa)
+
+
+#Reprodutividade (Fazendo ainda)
+SupraRep <- Supra %>% filter(amp_lat == "AMP") %>% select(c("valores","musculo"))
+SupraRep$valores <- ifelse(is.na(SupraRep$valores), 0, 1)
+AnovaRepSup <- aov(SupraRep$valores ~ as.factor(SupraRep$musculo))
+summary(AnovaRepSup)
+
+
+#na mão
+SupraRepEst <- SupraRep %>% group_by(musculo) %>% summarise(Media = mean(valores),
+                                                              Var = Media*(1-Media)/sqrt(n()))
