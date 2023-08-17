@@ -1,5 +1,5 @@
 source("rdocs/source/packages.R")
-pacman::p_load(DescTools, asbio, gridExtra)
+pacman::p_load(DescTools, asbio, gridExtra, lmtest)
 
 # ---------------------------------------------------------------------------- #
 
@@ -84,6 +84,7 @@ ggplot(ResLatSup) +
 #ggsave("resultados/Supra/SupraLat_Norm.pdf", width = 158, height = 93, units = "mm")
 
 #Independencia
+#dwtest(AnovaLatSup) #Tem algo de errado com esse teste
 ggplot(ResLatSup) +
   aes(x = 1:length(Res), y = Res) +
   geom_point(colour = "#A11D21", size = 3) +
@@ -161,6 +162,7 @@ ggplot(ResAmpSup) +
 #ggsave("resultados/Supra/SupraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
 
 #Independencia
+#dwtest(AnovaAmpSup) #Tem algo de errado com esse teste
 ggplot(ResAmpSup) +
   aes(x = 1:length(Res), y = Res) +
   geom_point(colour = "#A11D21", size = 3) +
