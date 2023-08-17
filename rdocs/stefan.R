@@ -53,7 +53,7 @@ ggplot(SupraLat) +  aes(x = musculo,y = log(valores)) +
   stat_summary(
     fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
   ) +
-  labs(x = "Músculo", y = "Logarítimo Natural da Latência") +
+  labs(x = "Músculo", y = "Logaritmo Natural da Latência") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
 ggsave("resultados/Supra/SupraLat_BoxLog.pdf", width = 158, height = 93, units = "mm")
@@ -131,7 +131,7 @@ ggplot(SupraAmp) +  aes(x = musculo,y = log(valores)) +
   stat_summary(
     fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
   ) +
-  labs(x = "Músculo", y = "Logarítimo Natural da Amplitude") +
+  labs(x = "Músculo", y = "Logaritmo Natural da Amplitude") +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
 ggsave("resultados/Supra/SupraAmp_BoxLog.pdf", width = 158, height = 93, units = "mm")
