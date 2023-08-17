@@ -128,8 +128,8 @@ SupraLatEst$musculo <- rownames(SupraLatEst)
 #Gráfico com latência média e IC
 ggplot(SupraLatEst) +
   aes(x = musculo, y = `log(SupraLat$valores)`) +
-  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
   geom_errorbar(aes(ymin=LCL, ymax=UCL), width=.2) +
+  geom_point(stat = "identity", color = "black", size= 3) +
   labs(x = "Músculo", y = "Latência") +
   theme_estat()
 #ggsave("resultados/Supra/SupraLat_MedDP.pdf", width = 158, height = 93, units = "mm")
@@ -232,7 +232,7 @@ SupraAmpEst$musculo <- rownames(SupraAmpEst)
 #Gráfico com latência média e IC
 ggplot(SupraAmpEst) +
   aes(x = musculo, y = `log(SupraAmp$valores)`) +
-  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
+  geom_point(stat = "identity", color = "black", size=3) +
   geom_errorbar(aes(ymin=LCL, ymax=UCL), width=.2) +
   labs(x = "Músculo", y = "Amplitude") +
   theme_estat()
@@ -245,11 +245,6 @@ ggplot(SupraAmpEst) +
 SupraRep <- Supra %>% filter(amp_lat == "AMP") %>% select(c("valores","musculo"))
 SupraRep$valores <- ifelse(is.na(SupraRep$valores), 0, 1)
 
-#Acho que Anova ta errada
-# AnovaRepSup <- aov(SupraRep$valores ~ as.factor(SupraRep$musculo))
-# summary(AnovaRepSup)
-# TukeyHSD(AnovaRepSup)
-
 
 #na mão
 SupraRepEst <- SupraRep %>% group_by(musculo) %>% summarise(Media = mean(valores),
@@ -260,7 +255,7 @@ SupraRepEst <- SupraRep %>% group_by(musculo) %>% summarise(Media = mean(valores
 #Gráfico com repordutibilidade média e desvio padrão
 ggplot(SupraRepEst) +
   aes(x = musculo, y = Media) +
-  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
+  geom_point(stat = "identity", fill = "black", size=3) +
   geom_errorbar(aes(ymin=Media-DP, ymax=Media+DP), width=.2) +
   labs(x = "Músculo", y = "Reprodutibilidade") +
   theme_estat()
