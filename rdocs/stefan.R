@@ -252,7 +252,7 @@ SupraRepEst <- SupraRep %>% group_by(musculo) %>% summarise(Media = mean(valores
                                                             n = n(),
                                                             Var = mean(valores)*(1-mean(valores))/n(),
                                                             DP = sqrt(mean(valores)*(1-mean(valores))/n()))
-#Gráfico com repordutibilidade média e IC 95%
+#Gráfico com repordutibilidade média e DP
 ggplot(SupraRepEst) +
   aes(x = musculo, y = Media) +
   geom_point(stat = "identity", fill = "black", size=3) +
