@@ -252,7 +252,7 @@ SupraRepEst <- SupraRep %>% group_by(musculo) %>% summarise(Media = mean(valores
                                                             n = n(),
                                                             Var = mean(valores)*(1-mean(valores))/n(),
                                                             DP = sqrt(mean(valores)*(1-mean(valores))/n()))
-#Gráfico com repordutibilidade média e desvio padrão
+#Gráfico com repordutibilidade média e IC 95%
 ggplot(SupraRepEst) +
   aes(x = musculo, y = Media) +
   geom_point(stat = "identity", fill = "black", size=3) +
@@ -266,19 +266,19 @@ PropSupraRep <- prop.test(x = SupraRepEst$Soma, n = SupraRepEst$n)
 PropSupraRep
 
 #Deve da pra fazer isso com um "for" mas to com preguiça
-prop.test(x = SupraRepEst$Soma[c(1,2)], n = SupraRepEst$n[c(1,2)])
-prop.test(x = SupraRepEst$Soma[c(1,3)], n = SupraRepEst$n[c(1,3)])
-prop.test(x = SupraRepEst$Soma[c(1,4)], n = SupraRepEst$n[c(1,4)])
-prop.test(x = SupraRepEst$Soma[c(1,5)], n = SupraRepEst$n[c(1,5)])
-prop.test(x = SupraRepEst$Soma[c(1,6)], n = SupraRepEst$n[c(1,6)])
-prop.test(x = SupraRepEst$Soma[c(2,3)], n = SupraRepEst$n[c(2,3)])
-prop.test(x = SupraRepEst$Soma[c(2,4)], n = SupraRepEst$n[c(2,4)])
-prop.test(x = SupraRepEst$Soma[c(2,5)], n = SupraRepEst$n[c(2,5)])
-prop.test(x = SupraRepEst$Soma[c(2,6)], n = SupraRepEst$n[c(2,6)])
-prop.test(x = SupraRepEst$Soma[c(3,4)], n = SupraRepEst$n[c(3,4)])
-prop.test(x = SupraRepEst$Soma[c(3,5)], n = SupraRepEst$n[c(3,5)])
-prop.test(x = SupraRepEst$Soma[c(3,6)], n = SupraRepEst$n[c(3,6)])
-prop.test(x = SupraRepEst$Soma[c(4,5)], n = SupraRepEst$n[c(4,5)])
-prop.test(x = SupraRepEst$Soma[c(4,6)], n = SupraRepEst$n[c(4,6)])
-prop.test(x = SupraRepEst$Soma[c(5,6)], n = SupraRepEst$n[c(5,6)])
+prop.test(x = SupraRepEst$Soma[c(1,2)], n = SupraRepEst$n[c(1,2)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(1,3)], n = SupraRepEst$n[c(1,3)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(1,4)], n = SupraRepEst$n[c(1,4)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(1,5)], n = SupraRepEst$n[c(1,5)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(1,6)], n = SupraRepEst$n[c(1,6)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(2,3)], n = SupraRepEst$n[c(2,3)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(2,4)], n = SupraRepEst$n[c(2,4)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(2,5)], n = SupraRepEst$n[c(2,5)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(2,6)], n = SupraRepEst$n[c(2,6)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(3,4)], n = SupraRepEst$n[c(3,4)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(3,5)], n = SupraRepEst$n[c(3,5)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(3,6)], n = SupraRepEst$n[c(3,6)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(4,5)], n = SupraRepEst$n[c(4,5)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(4,6)], n = SupraRepEst$n[c(4,6)],correct = F)
+prop.test(x = SupraRepEst$Soma[c(5,6)], n = SupraRepEst$n[c(5,6)],correct = F)
 
