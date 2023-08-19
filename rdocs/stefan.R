@@ -132,7 +132,7 @@ ggplot(SupraLatEst) +
   geom_point(stat = "identity", color = "black", size= 3) +
   labs(x = "Músculo", y = "Latência") +
   theme_estat()
-#ggsave("resultados/Supra/SupraLat_MedDP.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Supra/SupraLat_MedIC.pdf", width = 158, height = 93, units = "mm")
 
 
 
@@ -229,14 +229,14 @@ LSDSupraAmp
 SupraAmpEst <- exp(LSDSupraAmp$means[c(1,5,6)])
 SupraAmpEst$musculo <- rownames(SupraAmpEst)
 
-#Gráfico com latência média e IC
+#Gráfico com amplitude média e IC
 ggplot(SupraAmpEst) +
   aes(x = musculo, y = `log(SupraAmp$valores)`) +
   geom_point(stat = "identity", color = "black", size=3) +
   geom_errorbar(aes(ymin=LCL, ymax=UCL), width=.2) +
   labs(x = "Músculo", y = "Amplitude") +
   theme_estat()
-#ggsave("resultados/Supra/SupraLat_MedDP.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Supra/SupraAmp_MedIC.pdf", width = 158, height = 93, units = "mm")
 
 
 
