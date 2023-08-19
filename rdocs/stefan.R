@@ -122,6 +122,9 @@ for (i in unique(SupraLat$musculo)) {
 
 LSDSupraLat <- LSD.test(AnovaLatSup, "as.factor(SupraLat$musculo)")
 LSDSupraLat
+#Pegar o Exp pras estimativas
+exp(LSDSupraLat)
+
 SupraLatEst <- exp(LSDSupraLat$means[c(1,5,6)])
 SupraLatEst$musculo <- rownames(SupraLatEst)
 
@@ -226,6 +229,9 @@ for (i in unique(SupraAmp$musculo)) {
 
 LSDSupraAmp <- LSD.test(AnovaAmpSup, "as.factor(SupraAmp$musculo)")
 LSDSupraAmp
+#Pegar o Exp pras estimativas
+exp(LSDSupraAmp)
+
 SupraAmpEst <- exp(LSDSupraAmp$means[c(1,5,6)])
 SupraAmpEst$musculo <- rownames(SupraAmpEst)
 
