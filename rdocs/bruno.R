@@ -120,8 +120,15 @@ ggplot(InfraLat) +  aes(x = musculo,y = log(valores)) +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
 #ggsave("resultados/Infra/InfraLat_BoxLog.pdf", width = 158, height = 93, units = "mm")
 
+# Transformação de box-cox com lambda de máxima verossimilhança
+p_load(MASS)
+bc <- boxcox(lm(InfraLat$valores ~ 1))
+lambda <- bc$x[which.max(bc$y)]
+InfraLat$valores <- (InfraLat$valores ^ lambda - 1) / lambda
+
+
 #Anova
-AnovaLatInfra <- aov(log(InfraLat$valores) ~ as.factor(InfraLat$musculo))
+AnovaLatInfra <- aov(InfraLat$valores ~ as.factor(InfraLat$musculo))
 summary(AnovaLatInfra)
 TukeyHSD(AnovaLatInfra)
 
@@ -159,7 +166,7 @@ ggplot(ResLatInfra) +
 #ggsave("resultados/Infra/InfraLat_Ind.pdf", width = 158, height = 93, units = "mm")
 
 #Homocedasticidade
-LeveneTest(log(InfraLat$valores) ~ InfraLat$musculo)
+LeveneTest(InfraLat$valores ~ InfraLat$musculo)
 bartlett.test(log(InfraLat$valores), InfraLat$musculo)
 ggplot(ResLatInfra) +
   aes(x = Musculo, y = Res) +
@@ -171,8 +178,7 @@ ggplot(ResLatInfra) +
   theme_estat()
 #ggsave("resultados/Infra/InfraLat_Homo.pdf", width = 158, height = 93, units = "mm")
 
-#Pressupostos Rejeitados sem transformação (Normalidade), aceitos com transformação log (Obaaa)
-# Verificar a frase acima depois ----
+#Pressupostos Rejeitados sob qualquer hipótese...
 
 #estimações
 for (i in unique(InfraLat$musculo)) {
@@ -226,8 +232,13 @@ ggplot(InfraAmp) +  aes(x = musculo,y = log(valores)) +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
 #ggsave("resultados/Infra/InfraAmp_BoxLog.pdf", width = 158, height = 93, units = "mm")
 
+# Transformação de box-cox
+bc <- boxcox(lm(InfraAmp$valores ~ 1))
+lambda <- bc$x[which.max(bc$y)]
+InfraAmp$valores <- (InfraAmp$valores ^ lambda - 1) / lambda
+
 #Anova
-AnovaAmpInfra <- aov(log(InfraAmp$valores) ~ as.factor(InfraAmp$musculo))
+AnovaAmpInfra <- aov(InfraAmp$valores ~ as.factor(InfraAmp$musculo))
 summary(AnovaAmpInfra)
 TukeyHSD(AnovaAmpInfra)
 
@@ -265,8 +276,8 @@ ggplot(ResAmpInfra) +
 #ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
 
 #Homocedasticidade
-LeveneTest(log(InfraAmp$valores) ~ InfraAmp$musculo)
-bartlett.test(log(InfraAmp$valores), InfraAmp$musculo)
+LeveneTest(InfraAmp$valores ~ InfraAmp$musculo)
+bartlett.test(InfraAmp$valores, InfraAmp$musculo)
 ggplot(ResAmpInfra) +
   aes(x = Musculo, y = Res) +
   geom_point(colour = "#A11D21", size = 3) +
@@ -277,7 +288,7 @@ ggplot(ResAmpInfra) +
   theme_estat()
 #ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
 
-#Pressupostos Rejeitados sem transformação, aceitos com transformação log (Obaaa)
+#Pressupostos de normalidade rejeitado sob qualquer transformação. Homocedasticidade aceita.
 
 #estimações
 for (i in unique(InfraAmp$musculo)) {
