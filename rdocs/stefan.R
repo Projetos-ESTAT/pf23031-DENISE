@@ -46,6 +46,8 @@ ggplot(SupraLat) +  aes(x = musculo,y = valores) +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
 #ggsave("resultados/Supra/SupraLat_Box.pdf", width = 158, height = 93, units = "mm")
+shapiro.test(SupraLat$valores)
+shapiro.test(log(SupraLat$valores))
 
 #Com transformação
 ggplot(SupraLat) +  aes(x = musculo,y = log(valores)) +
@@ -153,6 +155,9 @@ ggplot(SupraAmp) +  aes(x = musculo,y = valores) +
   theme_estat() +
   scale_x_discrete(labels = function(x) str_wrap(x,width = 20))
 #ggsave("resultados/Supra/SupraAmp_Box.pdf", width = 158, height = 93, units = "mm")
+shapiro.test(SupraAmp$valores)
+shapiro.test(log(SupraAmp$valores))
+
 
 #Com transformação
 ggplot(SupraAmp) +  aes(x = musculo,y = log(valores)) +
@@ -243,6 +248,8 @@ ggplot(SupraAmpEst) +
   labs(x = "Músculo", y = "Amplitude") +
   theme_estat()
 #ggsave("resultados/Supra/SupraAmp_MedIC.pdf", width = 158, height = 93, units = "mm")
+
+  
 
 
 
