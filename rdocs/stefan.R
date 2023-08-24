@@ -271,8 +271,34 @@ ggplot(SupraRepEst) +
   geom_point(stat = "identity", fill = "black", size=3) +
   geom_errorbar(aes(ymin=Media-qnorm(0.975)*DP, ymax=Media+qnorm(0.975)*DP), width=.2) +
   labs(x = "Músculo", y = "Reprodutibilidade") +
+  ylim(0.2,1)+
   theme_estat()
 #ggsave("resultados/Supra/SupraRep_MedIC.pdf", width = 158, height = 93, units = "mm")
+
+
+#Agrupando
+SupraRep <- SupraRep %>% mutate(Grupo_musculo = case_when(musculo == "SCc" ~ "SCc, TRAPc",
+                                                          musculo == "TRAPc" ~ "SCc, TRAPc",
+                                                          musculo == "SCi" ~"SCi, SCMc, TRAPi",
+                                                          musculo == "SCMc" ~"SCi, SCMc, TRAPi",
+                                                          musculo == "TRAPi" ~"SCi, SCMc, TRAPi",
+                                                          musculo == "SCMi" ~"SCMi",))
+
+SupraRepEst2 <- SupraRep %>% group_by(Grupo_musculo) %>% summarise(Media = mean(valores),
+                                                            Soma = sum(valores),
+                                                            n = n(),
+                                                            Var = mean(valores)*(1-mean(valores))/n(),
+                                                            DP = sqrt(mean(valores)*(1-mean(valores))/n()))
+#Gráfico com repordutibilidade média e IC Agrupado
+ggplot(SupraRepEst2) +
+  aes(x = Grupo_musculo, y = Media) +
+  geom_point(stat = "identity", fill = "black", size=3) +
+  geom_errorbar(aes(ymin=Media-qnorm(0.975)*DP, ymax=Media+qnorm(0.975)*DP), width=.2) +
+  labs(x = "Músculo", y = "Reprodutibilidade") +
+  ylim(0.2,1)+
+  theme_estat()
+#ggsave("resultados/Supra/SupraRep_MedICAgrup.pdf", width = 158, height = 93, units = "mm")
+
 
 
 PropSupraRep <- prop.test(x = SupraRepEst$Soma, n = SupraRepEst$n)
