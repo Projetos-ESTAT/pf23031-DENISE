@@ -265,14 +265,14 @@ SupraRepEst <- SupraRep %>% group_by(musculo) %>% summarise(Media = mean(valores
                                                             n = n(),
                                                             Var = mean(valores)*(1-mean(valores))/n(),
                                                             DP = sqrt(mean(valores)*(1-mean(valores))/n()))
-#Gráfico com repordutibilidade média e DP
+#Gráfico com repordutibilidade média e IC
 ggplot(SupraRepEst) +
   aes(x = musculo, y = Media) +
   geom_point(stat = "identity", fill = "black", size=3) +
-  geom_errorbar(aes(ymin=Media-DP, ymax=Media+DP), width=.2) +
+  geom_errorbar(aes(ymin=Media-qnorm(0.975)*DP, ymax=Media+qnorm(0.975)*DP), width=.2) +
   labs(x = "Músculo", y = "Reprodutibilidade") +
   theme_estat()
-#ggsave("resultados/Supra/SupraRep_MedDP.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Supra/SupraRep_MedIC.pdf", width = 158, height = 93, units = "mm")
 
 
 PropSupraRep <- prop.test(x = SupraRepEst$Soma, n = SupraRepEst$n)
