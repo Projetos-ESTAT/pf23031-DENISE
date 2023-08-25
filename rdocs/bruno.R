@@ -540,20 +540,20 @@ InfraRep <- Infra |>
   dplyr::select(valores,musculo)
 InfraRep$valores <- ifelse(is.na(InfraRep$valores), 0, 1)
 
-
 #na mão
 InfraRepEst <- InfraRep %>%
   group_by(musculo) %>%
   summarise(Media = mean(valores),
-                                                            Soma = sum(valores),
-                                                            n = n(),
-                                                            Var = mean(valores)*(1-mean(valores))/n(),
-                                                            DP = sqrt(mean(valores)*(1-mean(valores))/n()))
+            Soma = sum(valores),
+            n = n(),
+            Var = mean(valores)*(1-mean(valores))/n(),
+            DP = sqrt(mean(valores)*(1-mean(valores))/n()))
+
 #Gráfico com repordutibilidade média e DP
 ggplot(InfraRepEst) +
   aes(x = musculo, y = Media) +
   geom_point(stat = "identity", fill = "black", size=3) +
-  geom_errorbar(aes(ymin=Media-DP, ymax=Media+DP), width=.2) +
+  geom_errorbar(aes(ymin=Media+qnorm(.025)*DP, ymax=Media+qnorm(.975)*DP, width=.2)) +
   labs(x = "Músculo", y = "Reprodutibilidade") +
   theme_estat()
 #ggsave("resultados/Infra/InfraRep_MedDP.pdf", width = 158, height = 93, units = "mm")
