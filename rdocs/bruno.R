@@ -505,7 +505,7 @@ ggplot(ResAmpInfra) +
 
 # ---------------------------------------------------------------------------- #
 
-#Pressupostos de normalidade rejeitado sob qualquer transformação. Homocedasticidade aceita.
+# Pressupostos de normalidade rejeitado sob (quase) qualquer transformação. Homocedasticidade aceita.
 
 #estimações
 for (i in unique(InfraAmp$musculo)) {
@@ -517,17 +517,27 @@ for (i in unique(InfraAmp$musculo)) {
   {print(paste(str(i), "Não Normal mesmo com transformação log"))}
 }
 
+# Análise não paramétrica ----
+
 kruskal.test(InfraAmp$valores, as.factor(InfraAmp$musculo))
 
 # Conover test
 ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "bonferroni")
+
+# Usando a correção de Benjamini & Hochberg (1995) ----
+ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "BH")
+
+# Usando a correção de Benjamini & Yekutieli (2001)
+ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "BY")
+
+# Usar a de BH mesmo.
 
 # --------------------------------------------------------------------------- #
 
 #Reprodutividade
 InfraRep <- Infra |>
   filter(amp_lat == "AMP") |>
-  select(valores,musculo)
+  dplyr::select(valores,musculo)
 InfraRep$valores <- ifelse(is.na(InfraRep$valores), 0, 1)
 
 
