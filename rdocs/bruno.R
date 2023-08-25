@@ -124,7 +124,7 @@ ggplot(InfraLat) +  aes(x = musculo,y = log(valores)) +
 p_load(MASS)
 bc <- boxcox(lm(InfraLat$valores ~ 1))
 lambda <- bc$x[which.max(bc$y)]
-InfraLat$valores <- (InfraLat$valores ^ lambda - 1) / lambda
+InfraLat$valores2 <- (InfraLat$valores ^ lambda - 1) / lambda
 
 
 #Anova
@@ -192,20 +192,10 @@ for (i in unique(InfraLat$musculo)) {
 
 LSDInfraLat <- LSD.test(AnovaLatInfra, "as.factor(InfraLat$musculo)")
 LSDInfraLat
-#Pegar o Exp pras estimativas
-exp(LSDInfraLat)
 
-InfraLatEst <- exp(LSDInfraLat$means[c(1,5,6)])
-InfraLatEst$musculo <- rownames(InfraLatEst)
+kruskal.test(InfraLat$valores, as.factor(InfraLat$musculo)) # Não há diferença entre os músculos
 
-#Gráfico com latência média e IC
-ggplot(InfraLatEst) +
-  aes(x = musculo, y = `log(InfraLat$valores)`) +
-  geom_errorbar(aes(ymin=LCL, ymax=UCL), width=.2) +
-  geom_point(stat = "identity", color = "black", size= 3) +
-  labs(x = "Músculo", y = "Latência") +
-  theme_estat()
-#ggsave("resultados/Infra/InfraLat_MedIC.pdf", width = 158, height = 93, units = "mm")
+# --------------------------------------------------------------------------- #
 
 #Amplitude (Precisa de uma análise do log)
 InfraAmp <- Infra %>% filter(amp_lat == "AMP")
@@ -235,10 +225,25 @@ ggplot(InfraAmp) +  aes(x = musculo,y = log(valores)) +
 # Transformação de box-cox
 bc <- boxcox(lm(InfraAmp$valores ~ 1))
 lambda <- bc$x[which.max(bc$y)]
-InfraAmp$valores <- (InfraAmp$valores ^ lambda - 1) / lambda
+InfraAmp$valores2 <- (InfraAmp$valores ^ lambda - 1) / lambda
+
+# log
+InfraAmp$valores3 <- log(InfraAmp$valores)
+
+# r^2
+InfraAmp$valores4 <- sqrt(InfraAmp$valores)
+
+# lambda = -1
+
+InfraAmp$valores5 <- (InfraAmp$valores ^ -1 - 1) / -1
+
+# lambda = -.2
+
+InfraAmp$valores6 <- (InfraAmp$valores ^ -.2 - 1) / -.2
+
 
 #Anova
-AnovaAmpInfra <- aov(InfraAmp$valores ~ as.factor(InfraAmp$musculo))
+AnovaAmpInfra <- aov(InfraAmp$valores2 ~ as.factor(InfraAmp$musculo))
 summary(AnovaAmpInfra)
 TukeyHSD(AnovaAmpInfra)
 
@@ -288,6 +293,218 @@ ggplot(ResAmpInfra) +
   theme_estat()
 #ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
 
+# Log ----
+
+#Anova
+AnovaAmpInfra <- aov(InfraAmp$valores3 ~ as.factor(InfraAmp$musculo))
+summary(AnovaAmpInfra)
+TukeyHSD(AnovaAmpInfra)
+
+#Pressupostos (Usar resíduos Studentizados)
+Res <- rstudent(AnovaAmpInfra)
+yfit <- fitted(AnovaAmpInfra)
+ResAmpInfra <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaAmpInfra$model[[2]])
+
+#Normalidade
+shapiro.test(ResAmpInfra$Res)
+#Verificar se tem o formato aproximado da Normal
+hist(ResAmpInfra$Res)
+ggplot(ResAmpInfra) +
+  aes(sample = Res) +
+  stat_qq(colour = "#A11D21") +
+  stat_qq_line(linewidth = 0.8) + 
+  labs(
+    x = "Quantis da Teóricos da Normal",
+    y = "Quantis da Amostra"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
+
+#Independencia
+#dwtest(AnovaAmpInfra) #Tem algo de errado com esse teste
+
+ggplot(ResAmpInfra) +
+  aes(x = 1:length(Res), y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Observação",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
+
+#Homocedasticidade
+LeveneTest(InfraAmp$valores ~ InfraAmp$musculo)
+ggplot(ResAmpInfra) +
+  aes(x = Musculo, y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Musculo",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
+
+# r^2 ----
+
+#Anova
+AnovaAmpInfra <- aov(InfraAmp$valores4 ~ as.factor(InfraAmp$musculo))
+summary(AnovaAmpInfra)
+TukeyHSD(AnovaAmpInfra)
+
+#Pressupostos (Usar resíduos Studentizados)
+Res <- rstudent(AnovaAmpInfra)
+yfit <- fitted(AnovaAmpInfra)
+ResAmpInfra <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaAmpInfra$model[[2]])
+
+#Normalidade
+shapiro.test(ResAmpInfra$Res)
+#Verificar se tem o formato aproximado da Normal
+hist(ResAmpInfra$Res)
+ggplot(ResAmpInfra) +
+  aes(sample = Res) +
+  stat_qq(colour = "#A11D21") +
+  stat_qq_line(linewidth = 0.8) + 
+  labs(
+    x = "Quantis da Teóricos da Normal",
+    y = "Quantis da Amostra"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
+
+#Independencia
+#dwtest(AnovaAmpInfra) #Tem algo de errado com esse teste
+
+ggplot(ResAmpInfra) +
+  aes(x = 1:length(Res), y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Observação",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
+
+#Homocedasticidade
+LeveneTest(InfraAmp$valores ~ InfraAmp$musculo)
+ggplot(ResAmpInfra) +
+  aes(x = Musculo, y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Musculo",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
+
+# lambda = -1 ----
+
+#Anova
+AnovaAmpInfra <- aov(InfraAmp$valores5 ~ as.factor(InfraAmp$musculo))
+summary(AnovaAmpInfra)
+TukeyHSD(AnovaAmpInfra)
+
+#Pressupostos (Usar resíduos Studentizados)
+Res <- rstudent(AnovaAmpInfra)
+yfit <- fitted(AnovaAmpInfra)
+ResAmpInfra <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaAmpInfra$model[[2]])
+
+#Normalidade
+shapiro.test(ResAmpInfra$Res)
+#Verificar se tem o formato aproximado da Normal
+hist(ResAmpInfra$Res)
+ggplot(ResAmpInfra) +
+  aes(sample = Res) +
+  stat_qq(colour = "#A11D21") +
+  stat_qq_line(linewidth = 0.8) + 
+  labs(
+    x = "Quantis da Teóricos da Normal",
+    y = "Quantis da Amostra"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
+
+#Independencia
+#dwtest(AnovaAmpInfra) #Tem algo de errado com esse teste
+
+ggplot(ResAmpInfra) +
+  aes(x = 1:length(Res), y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Observação",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
+
+#Homocedasticidade
+LeveneTest(InfraAmp$valores ~ InfraAmp$musculo)
+bartlett.test(InfraAmp$valores, InfraAmp$musculo)
+ggplot(ResAmpInfra) +
+  aes(x = Musculo, y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Musculo",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
+
+# lambda = -.2 ----
+
+#Anova
+AnovaAmpInfra <- aov(InfraAmp$valores6 ~ as.factor(InfraAmp$musculo))
+summary(AnovaAmpInfra)
+TukeyHSD(AnovaAmpInfra)
+
+#Pressupostos (Usar resíduos Studentizados)
+Res <- rstudent(AnovaAmpInfra)
+yfit <- fitted(AnovaAmpInfra)
+ResAmpInfra <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaAmpInfra$model[[2]])
+
+#Normalidade
+shapiro.test(ResAmpInfra$Res)
+#Verificar se tem o formato aproximado da Normal
+hist(ResAmpInfra$Res)
+ggplot(ResAmpInfra) +
+  aes(sample = Res) +
+  stat_qq(colour = "#A11D21") +
+  stat_qq_line(linewidth = 0.8) + 
+  labs(
+    x = "Quantis da Teóricos da Normal",
+    y = "Quantis da Amostra"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
+
+#Independencia
+#dwtest(AnovaAmpInfra) #Tem algo de errado com esse teste
+
+ggplot(ResAmpInfra) +
+  aes(x = 1:length(Res), y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Observação",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
+
+#Homocedasticidade
+LeveneTest(InfraAmp$valores6 ~ InfraAmp$musculo)
+ggplot(ResAmpInfra) +
+  aes(x = Musculo, y = Res) +
+  geom_point(colour = "#A11D21", size = 3) +
+  labs(
+    x = "Musculo",
+    y = "Resíduos Studentizados"
+  ) +
+  theme_estat()
+#ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
+
+
+# ---------------------------------------------------------------------------- #
+
 #Pressupostos de normalidade rejeitado sob qualquer transformação. Homocedasticidade aceita.
 
 #estimações
@@ -300,25 +517,17 @@ for (i in unique(InfraAmp$musculo)) {
   {print(paste(str(i), "Não Normal mesmo com transformação log"))}
 }
 
-LSDInfraAmp <- LSD.test(AnovaAmpInfra, "as.factor(InfraAmp$musculo)")
-LSDInfraAmp
-#Pegar o Exp pras estimativas
-exp(LSDInfraAmp)
+kruskal.test(InfraAmp$valores, as.factor(InfraAmp$musculo))
 
-InfraAmpEst <- exp(LSDInfraAmp$means[c(1,5,6)])
-InfraAmpEst$musculo <- rownames(InfraAmpEst)
+# Conover test
+ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "bonferroni")
 
-#Gráfico com amplitude média e IC
-ggplot(InfraAmpEst) +
-  aes(x = musculo, y = `log(InfraAmp$valores)`) +
-  geom_point(stat = "identity", color = "black", size=3) +
-  geom_errorbar(aes(ymin=LCL, ymax=UCL), width=.2) +
-  labs(x = "Músculo", y = "Amplitude") +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_MedIC.pdf", width = 158, height = 93, units = "mm")
+# --------------------------------------------------------------------------- #
 
 #Reprodutividade
-InfraRep <- Infra %>% filter(amp_lat == "AMP") %>% select(c("valores","musculo"))
+InfraRep <- Infra |>
+  filter(amp_lat == "AMP") |>
+  select(valores,musculo)
 InfraRep$valores <- ifelse(is.na(InfraRep$valores), 0, 1)
 
 
