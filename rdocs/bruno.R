@@ -167,7 +167,6 @@ ggplot(ResLatInfra) +
 
 #Homocedasticidade
 LeveneTest(InfraLat$valores ~ InfraLat$musculo)
-bartlett.test(log(InfraLat$valores), InfraLat$musculo)
 ggplot(ResLatInfra) +
   aes(x = Musculo, y = Res) +
   geom_point(colour = "#A11D21", size = 3) +
@@ -282,7 +281,6 @@ ggplot(ResAmpInfra) +
 
 #Homocedasticidade
 LeveneTest(InfraAmp$valores ~ InfraAmp$musculo)
-bartlett.test(InfraAmp$valores, InfraAmp$musculo)
 ggplot(ResAmpInfra) +
   aes(x = Musculo, y = Res) +
   geom_point(colour = "#A11D21", size = 3) +
@@ -318,7 +316,7 @@ ggplot(ResAmpInfra) +
     y = "Quantis da Amostra"
   ) +
   theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Infra/InfraAmp_log_Norm.pdf", width = 158, height = 93, units = "mm")
 
 #Independencia
 #dwtest(AnovaAmpInfra) #Tem algo de errado com esse teste
@@ -331,7 +329,7 @@ ggplot(ResAmpInfra) +
     y = "Resíduos Studentizados"
   ) +
   theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Infra/InfraAmp_log_Ind.pdf", width = 158, height = 93, units = "mm")
 
 #Homocedasticidade
 LeveneTest(InfraAmp$valores ~ InfraAmp$musculo)
@@ -343,7 +341,7 @@ ggplot(ResAmpInfra) +
     y = "Resíduos Studentizados"
   ) +
   theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Infra/InfraAmp_log_Homo.pdf", width = 158, height = 93, units = "mm")
 
 # r^2 ----
 
@@ -522,13 +520,13 @@ for (i in unique(InfraAmp$musculo)) {
 kruskal.test(InfraAmp$valores, as.factor(InfraAmp$musculo))
 
 # Conover test
-ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "bonferroni")
+#ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "bonferroni")
 
 # Usando a correção de Benjamini & Hochberg (1995) ----
 ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "BH")
 
 # Usando a correção de Benjamini & Yekutieli (2001)
-ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "BY")
+#ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "BY")
 
 # Usar a de BH mesmo.
 
@@ -538,7 +536,35 @@ ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "BY")
 InfraRep <- Infra |>
   filter(amp_lat == "AMP") |>
   dplyr::select(valores,musculo)
+
+#na mão
+InfraRepEst <- InfraRep %>%
+  group_by(musculo) %>%
+  summarise(Mediana = median(valores),
+            Soma = sum(valores),
+            n = n(),
+            Var = var(valores),
+            DP = sd(valores),
+            linf = Mediana - qnorm(.975)*DP/sqrt(n),
+            lsup = Mediana + qnorm(.975)*DP/sqrt(n))
+
+#Gráfico com repordutibilidade média e DP
+ggplot(InfraRepEst) +
+  aes(x = musculo, y = Mediana) +
+  geom_point(stat = "identity", fill = "black", size=3) +
+  geom_errorbar(aes(ymin=Mediana+qnorm(.025)*DP/sqrt(n), ymax=Mediana+qnorm(.975)*DP/sqrt(n), width=.2)) +
+  labs(x = "Músculo", y = "Mediana") +
+  theme_estat()
+ggsave("resultados/Infra/InfraRep_MedDP.pdf", width = 158, height = 93, units = "mm")
+
+# --------------------------------------------------------------------------- #
+
+#Reprodutividade
+InfraRep <- Infra %>%
+  filter(amp_lat == "AMP") %>%
+  dplyr::select(c("valores","musculo"))
 InfraRep$valores <- ifelse(is.na(InfraRep$valores), 0, 1)
+
 
 #na mão
 InfraRepEst <- InfraRep %>%
@@ -549,32 +575,82 @@ InfraRepEst <- InfraRep %>%
             Var = mean(valores)*(1-mean(valores))/n(),
             DP = sqrt(mean(valores)*(1-mean(valores))/n()))
 
-#Gráfico com repordutibilidade média e DP
+#Gráfico com reprodutibilidade média e IC
 ggplot(InfraRepEst) +
   aes(x = musculo, y = Media) +
   geom_point(stat = "identity", fill = "black", size=3) +
-  geom_errorbar(aes(ymin=Media+qnorm(.025)*DP, ymax=Media+qnorm(.975)*DP, width=.2)) +
+  geom_errorbar(aes(ymin=Media-qnorm(0.975)*DP, ymax=Media+qnorm(0.975)*DP), width=.2) +
   labs(x = "Músculo", y = "Reprodutibilidade") +
+  ylim(0.2,1)+
   theme_estat()
-#ggsave("resultados/Infra/InfraRep_MedDP.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Infra/reprodutibilidade.pdf", width = 158, height = 93, units = "mm")
+
+
+#Agrupando
+InfraRep <- InfraRep %>%
+  mutate(Grupo_musculo = case_when(musculo == "SCc" ~ "SCc, TRAPc",
+                                   musculo == "TRAPc" ~ "SCc, TRAPc",
+                                   musculo == "SCi" ~"SCi, SCMc, TRAPi",
+                                   musculo == "TRAPi" ~"SCi, SCMc, TRAPi",
+                                   musculo == "SCMi" ~"SCMi"))
+
+InfraRepEst2 <- InfraRep %>%
+  group_by(Grupo_musculo) %>%
+  summarise(Media = mean(valores),
+            Soma = sum(valores),
+            n = n(),
+            Var = mean(valores)*(1-mean(valores))/n(),
+            DP = sqrt(mean(valores)*(1-mean(valores))/n()))
+
+#Gráfico com repordutibilidade média e IC Agrupado
+ggplot(InfraRepEst2) +
+  aes(x = Grupo_musculo, y = Media) +
+  geom_point(stat = "identity", fill = "black", size=3) +
+  geom_errorbar(aes(ymin=Media-qnorm(0.975)*DP, ymax=Media+qnorm(0.975)*DP), width=.2) +
+  labs(x = "Músculo", y = "Reprodutibilidade") +
+  ylim(0.2,1)+
+  theme_estat()
+ggsave("resultados/Infra/reprodutibilidade2.pdf", width = 158, height = 93, units = "mm")
+
 
 
 PropInfraRep <- prop.test(x = InfraRepEst$Soma, n = InfraRepEst$n)
 PropInfraRep
 
+# IC
+InfraRepEst <- InfraRepEst |>
+  mutate(linf = (Media-qnorm(0.975)*DP)*100,
+         lsup = (Media+qnorm(0.975)*DP)*100)
+
+
 #Deve da pra fazer isso com um "for" mas to com preguiça
 prop.test(x = InfraRepEst$Soma[c(1,2)], n = InfraRepEst$n[c(1,2)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(1,3)], n = InfraRepEst$n[c(1,3)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(1,4)], n = InfraRepEst$n[c(1,4)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(1,5)], n = InfraRepEst$n[c(1,5)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(1,6)], n = InfraRepEst$n[c(1,6)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(2,3)], n = InfraRepEst$n[c(2,3)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(2,4)], n = InfraRepEst$n[c(2,4)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(2,5)], n = InfraRepEst$n[c(2,5)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(2,6)], n = InfraRepEst$n[c(2,6)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(3,4)], n = InfraRepEst$n[c(3,4)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(3,5)], n = InfraRepEst$n[c(3,5)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(3,6)], n = InfraRepEst$n[c(3,6)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(4,5)], n = InfraRepEst$n[c(4,5)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(4,6)], n = InfraRepEst$n[c(4,6)],correct = F)
+
 prop.test(x = InfraRepEst$Soma[c(5,6)], n = InfraRepEst$n[c(5,6)],correct = F)
+
