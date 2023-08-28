@@ -194,6 +194,24 @@ LSDInfraLat
 
 kruskal.test(InfraLat$valores, as.factor(InfraLat$musculo)) # Não há diferença entre os músculos
 
+# agora fazendo o teste de friedman, que é mais apropriado para este caso
+p_load(ggpubr,rstatix)
+
+friedman <- InfraLat %>%
+  mutate(id = factor(rep(1:59,6))) %>%
+  na.omit() %>%
+  friedman_test(valores ~ musculo | id)
+# muito NA no banco, dá erro.
+
+p_load(Skillings.Mack)
+Ski.Mack(InfraLat$valores,groups = InfraLat$musculo)
+# nao funciona
+
+p_load(PMCMRplus)
+skillingsMackTest(y=InfraLat$valores,groups = InfraLat$musculo,
+                  blocks = InfraLat$tipo)
+
+
 # --------------------------------------------------------------------------- #
 
 #Amplitude (Precisa de uma análise do log)
