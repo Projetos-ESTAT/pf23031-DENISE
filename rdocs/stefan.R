@@ -1,5 +1,5 @@
 source("rdocs/source/packages.R")
-pacman::p_load(DescTools, asbio, gridExtra, lmtest,agricolae)
+pacman::p_load(DescTools, asbio, gridExtra, lmtest,agricolae,rstatix)
 
 # ---------------------------------------------------------------------------- #
 
@@ -62,16 +62,17 @@ ggplot(SupraLat) +  aes(x = musculo,y = log(valores)) +
 
 
 #Anova
-AnovaLatSup <- aov(log(SupraLat$valores) ~ as.factor(SupraLat$musculo))
+AnovaLatSup <- aov(log(SupraLat$valores) ~ as.factor(SupraLat$musculo) + as.factor(SupraLat$id))
 summary(AnovaLatSup)
-TukeyHSD(AnovaLatSup)
+TukeyHSD(AnovaLatSup)$`as.factor(SupraLat$musculo)`
 
 #Pressupostos (Usar resíduos Studentizados)
 Res <- rstudent(AnovaLatSup)
 yfit <- fitted(AnovaLatSup)
 ResLatSup <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaLatSup$model[[2]])
 #Normalidade
-shapiro.test(ResLatSup$Res)
+shapiro.test(ResLatSup)
+#ResLatSup$Res[ResLatSup$Res<4]
 #Verificar se tem o formato aproximado da Normal
 hist(ResLatSup$Res)
 ggplot(ResLatSup) +
@@ -111,6 +112,33 @@ ggplot(ResLatSup) +
 #ggsave("resultados/Supra/SupraLat_Homo.pdf", width = 158, height = 93, units = "mm")
 
 #Pressupostos Rejeitados sem transformação (Normalidade), aceitos com transformação log (Obaaa)
+
+
+
+#ANOVA pareada
+SupraLat$id <- rep(1:55, each=6)
+SupraLat$logvalores <- log(SupraLat$valores)
+res.aov <- anova_test(data = SupraLat, dv = logvalores, wid = id, within = musculo)
+get_anova_table(res.aov,correction = "none")
+pwc <- SupraLat %>%
+  pairwise_t_test(
+    logvalores ~ musculo, paired = TRUE,
+    p.adjust.method = "BH"
+  )
+pwc
+
+#Pressupostos
+#Normalidade
+SupraLat %>%
+  group_by(musculo) %>%
+  shapiro_test(logvalores)
+
+#Esfericidade
+res.aov$`Mauchly's Test for Sphericity`
+
+#Pressupostos Rejeitados sem transformação (Normalidade), aceitos com transformação log (Obaaa)
+
+
 
 #estimações
 for (i in unique(SupraLat$musculo)) {
@@ -172,9 +200,9 @@ ggplot(SupraAmp) +  aes(x = musculo,y = log(valores)) +
 
 
 #Anova
-AnovaAmpSup <- aov(log(SupraAmp$valores) ~ as.factor(SupraAmp$musculo))
+AnovaAmpSup <- aov(log(SupraAmp$valores) ~ as.factor(SupraAmp$musculo) + as.factor(SupraAmp$id))
 summary(AnovaAmpSup)
-TukeyHSD(AnovaAmpSup)
+round(TukeyHSD(AnovaAmpSup)$`as.factor(SupraAmp$musculo)`,4)
 
 #Pressupostos (Usar resíduos Studentizados)
 Res <- rstudent(AnovaAmpSup)
@@ -221,6 +249,36 @@ ggplot(ResAmpSup) +
 #ggsave("resultados/Supra/SupraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
 
 #Pressupostos Rejeitados sem transformação, aceitos com transformação log (Obaaa)
+
+
+
+#ANOVA pareada
+SupraAmp$id <- rep(1:55, each=6)
+SupraAmp$logvalores <- log(SupraAmp$valores)
+res.aov <- anova_test(data = SupraAmp, dv = logvalores, wid = id, within = musculo)
+get_anova_table(res.aov,correction = "none")
+pwc <- SupraAmp %>%
+  pairwise_t_test(
+    valores ~ musculo, paired = TRUE,
+    p.adjust.method = "BH"
+  )
+pwc
+
+#Pressupostos
+#Normalidade
+SupraLat %>%
+  group_by(musculo) %>%
+  shapiro_test(logvalores)
+
+#Esfericidade
+res.aov$`Mauchly's Test for Sphericity`
+
+#Pressupostos Rejeitados sem transformação (Normalidade), aceitos com transformação log (Obaaa)
+
+
+
+
+
 
 #estimações
 for (i in unique(SupraAmp$musculo)) {
