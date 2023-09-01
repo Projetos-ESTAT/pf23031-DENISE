@@ -435,3 +435,29 @@ PT = pairwiseMcnemar(valores ~ musculo | id,
 round(PT$Pairwise[5],4)
 
 
+
+#Rep Supra+Infra
+Rep <- Banco %>% filter(amp_lat == "AMP") %>% select(c("valores","musculo"))
+Rep$valores <- ifelse(is.na(Rep$valores), 0, 1)
+Rep$id <- rep(1:114, each=6)
+
+RepEst <- Rep %>% group_by(musculo) %>% summarise(Media = mean(valores),
+                                                            Soma = sum(valores),
+                                                            n = n(),
+                                                            Var = mean(valores)*(1-mean(valores))/n(),
+                                                            DP = sqrt(mean(valores)*(1-mean(valores))/n()))
+
+#Gráfico com repordutibilidade média e IC
+ggplot(RepEst) +
+  aes(x = musculo, y = Media) +
+  geom_point(stat = "identity", fill = "black", size=3) +
+  geom_errorbar(aes(ymin=Media-qnorm(0.975)*DP, ymax=Media+qnorm(0.975)*DP), width=.2) +
+  labs(x = "Músculo", y = "Reprodutibilidade") +
+  ylim(0.2,1)+
+  theme_estat()
+ggsave("resultados/Supra/SupraInfraRep_MedIC.pdf", width = 158, height = 93, units = "mm")
+
+
+RepEst$LI <- RepEst$Media-qnorm(0.975)*RepEst$DP
+RepEst$LS <- RepEst$Media+qnorm(0.975)*RepEst$DP
+RepEst <- RepEst %>% select(Media,LI,LS, musculo)
