@@ -592,7 +592,9 @@ InfraRep <- Infra %>%
   filter(amp_lat == "AMP") %>%
   dplyr::select(c("valores","musculo"))
 InfraRep$valores <- ifelse(is.na(InfraRep$valores), 0, 1)
+InfraRep$id <- factor(rep(1:59,each=6))
 
+cochran_qtest(InfraRep, valores ~ musculo|id)
 
 #na mão
 InfraRepEst <- InfraRep %>%
@@ -770,3 +772,6 @@ df$id <- factor(df$id)
 # Teste de friedman ----
 
 df |> friedman_test(valores ~ musculo | id)
+
+# ---------------------------------------------------------------------------- #
+# teste de cochran
