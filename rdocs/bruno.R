@@ -198,7 +198,17 @@ kruskal.test(InfraLat$valores, as.factor(InfraLat$musculo)) # Não há diferenç
 p_load(ggpubr,rstatix)
 
 friedman <- InfraLat %>%
-  mutate(id = factor(rep(1:59,6))) %>%
+  mutate(id = factor(rep(1:59,6)))
+
+friedman <- friedman[complete.cases(friedman), ] 
+
+friedman$id
+# I want remove all lines wich the corresponding factor friedman$id doesn't have exactly 6 appears in the data.
+table(friedman$id)
+# i want to remove the data wich dosen't appear exactly 6 times on above code
+completos <- c("2","3","34","")
+friedman |> filter(id == )
+
   na.omit() %>%
   friedman_test(valores ~ musculo | id)
 # muito NA no banco, dá erro.
@@ -672,3 +682,91 @@ prop.test(x = InfraRepEst$Soma[c(4,6)], n = InfraRepEst$n[c(4,6)],correct = F)
 
 prop.test(x = InfraRepEst$Soma[c(5,6)], n = InfraRepEst$n[c(5,6)],correct = F)
 
+# ---------------------------------------------------------------------- #
+# 3.0) adaptando o banco para fazer o teste de friedman ----
+
+musculo <- c("SCMi","SCMc","TRAPi","TRAPc","SCi","SCc")
+
+INFRA <- read_excel("banco/ESTAT.xlsx", sheet = "INFRA", 
+                    range = "B2:M61", na = "*")
+
+INFRA <- INFRA[complete.cases(INFRA), ] 
+
+AMP <- c(1,3,5,7,9,11)
+LAT <- c(2,4,6,8,10,12)
+
+amp <- c(t(INFRA[,AMP]))
+lat <- c(t(INFRA[,LAT]))
+
+df <- data.frame(matrix(NA, nrow = 96, ncol = 3))
+df[, 1] <- c(amp, rep(NA, 96 - length(amp)))
+df[, 2] <- c(lat, rep(NA, 96 - length(lat)))
+
+df[, 3] <- rep(musculo, length.out = 96)
+
+valores <- c(df$X1,df$X2)
+musculo <- rep(df$X3,2)
+
+df <- data.frame(valores,musculo)
+df$amp_lat <- NA
+df[1:96, 3] <- "AMP"
+df[97:192, 3] <- "LAT"
+
+#rm(INFRA,SUPRA,amp,AMP,infra_amp,infra_lat,lat,LAT,musculo,supra_amp,supra_lat,
+#   tipo,valores)
+
+df$musculo <- factor(df$musculo)
+df$amp_lat <- factor(df$amp_lat)
+df$id <- rep(1:32,each=6)
+
+df <- df |> filter(amp_lat == "LAT")
+df$id <- factor(df$id)
+
+# Teste de friedman ----
+
+df |> friedman_test(valores ~ musculo | id)
+
+
+# ---------------------------------------------------------------------- #
+# 4.0) adaptando o banco para fazer o teste de friedman ----
+
+musculo <- c("SCMi","SCMc","TRAPi","TRAPc","SCi","SCc")
+
+INFRA <- read_excel("banco/ESTAT.xlsx", sheet = "INFRA", 
+                    range = "B2:M61", na = "*")
+
+INFRA <- INFRA[complete.cases(INFRA), ] 
+
+AMP <- c(1,3,5,7,9,11)
+LAT <- c(2,4,6,8,10,12)
+
+amp <- c(t(INFRA[,AMP]))
+lat <- c(t(INFRA[,LAT]))
+
+df <- data.frame(matrix(NA, nrow = 96, ncol = 3))
+df[, 1] <- c(amp, rep(NA, 96 - length(amp)))
+df[, 2] <- c(lat, rep(NA, 96 - length(lat)))
+
+df[, 3] <- rep(musculo, length.out = 96)
+
+valores <- c(df$X1,df$X2)
+musculo <- rep(df$X3,2)
+
+df <- data.frame(valores,musculo)
+df$amp_lat <- NA
+df[1:96, 3] <- "AMP"
+df[97:192, 3] <- "LAT"
+
+#rm(INFRA,SUPRA,amp,AMP,infra_amp,infra_lat,lat,LAT,musculo,supra_amp,supra_lat,
+#   tipo,valores)
+
+df$musculo <- factor(df$musculo)
+df$amp_lat <- factor(df$amp_lat)
+df$id <- rep(1:32,each=6)
+
+df <- df |> filter(amp_lat == "AMP")
+df$id <- factor(df$id)
+
+# Teste de friedman ----
+
+df |> friedman_test(valores ~ musculo | id)
