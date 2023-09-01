@@ -1,5 +1,5 @@
 source("rdocs/source/packages.R")
-pacman::p_load(DescTools, asbio, gridExtra, lmtest,agricolae,rstatix)
+pacman::p_load(DescTools, asbio, gridExtra, lmtest,agricolae,rstatix,ez,RVAideMemoire)
 
 # ---------------------------------------------------------------------------- #
 
@@ -128,10 +128,29 @@ pwc <- SupraLat %>%
 pwc
 
 #Pressupostos
+
+Res <- as.vector(rstudent(attr(res.aov, "args")$model))
+yfit <- as.vector(fitted(attr(res.aov, "args")$model))
+ResLatSup <- data.frame(Res=Res,yfit=yfit)
+#Normalidade
+shapiro.test(ResLatSup$Res)
+
 #Normalidade
 SupraLat %>%
   group_by(musculo) %>%
   shapiro_test(logvalores)
+hist(ResLatSup$Res)
+ggplot(ResLatSup) +
+  aes(sample = Res) +
+  stat_qq(colour = "#A11D21") +
+  stat_qq_line(linewidth = 0.8) + 
+  labs(
+    x = "Quantis da Teóricos da Normal",
+    y = "Quantis da Amostra"
+  ) +
+  theme_estat()
+#ggsave("resultados/Supra/SupraLat_Norm.pdf", width = 158, height = 93, units = "mm")
+
 
 #Esfericidade
 res.aov$`Mauchly's Test for Sphericity`
@@ -259,16 +278,35 @@ res.aov <- anova_test(data = SupraAmp, dv = logvalores, wid = id, within = muscu
 get_anova_table(res.aov,correction = "none")
 pwc <- SupraAmp %>%
   pairwise_t_test(
-    valores ~ musculo, paired = TRUE,
+    logvalores ~ musculo, paired = TRUE,
     p.adjust.method = "BH"
   )
 pwc
 
 #Pressupostos
+
+Res <- as.vector(rstudent(attr(res.aov, "args")$model))
+yfit <- as.vector(fitted(attr(res.aov, "args")$model))
+ResAmpSup <- data.frame(Res=Res,yfit=yfit)
 #Normalidade
-SupraLat %>%
+shapiro.test(ResAmpSup$Res)
+
+#Normalidade
+SupraAmp %>%
   group_by(musculo) %>%
   shapiro_test(logvalores)
+hist(ResAmpSup$Res)
+ggplot(ResAmpSup) +
+  aes(sample = Res) +
+  stat_qq(colour = "#A11D21") +
+  stat_qq_line(linewidth = 0.8) + 
+  labs(
+    x = "Quantis da Teóricos da Normal",
+    y = "Quantis da Amostra"
+  ) +
+  theme_estat()
+#ggsave("resultados/Supra/SupraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
+
 
 #Esfericidade
 res.aov$`Mauchly's Test for Sphericity`
@@ -315,6 +353,7 @@ ggplot(SupraAmpEst) +
 #Reprodutividade
 SupraRep <- Supra %>% filter(amp_lat == "AMP") %>% select(c("valores","musculo"))
 SupraRep$valores <- ifelse(is.na(SupraRep$valores), 0, 1)
+SupraRep$id <- rep(1:55, each=6)
 
 
 #na mão
@@ -378,4 +417,21 @@ prop.test(x = SupraRepEst$Soma[c(3,6)], n = SupraRepEst$n[c(3,6)],correct = F)
 prop.test(x = SupraRepEst$Soma[c(4,5)], n = SupraRepEst$n[c(4,5)],correct = F)
 prop.test(x = SupraRepEst$Soma[c(4,6)], n = SupraRepEst$n[c(4,6)],correct = F)
 prop.test(x = SupraRepEst$Soma[c(5,6)], n = SupraRepEst$n[c(5,6)],correct = F)
+
+
+
+
+#Pareado
+cochran.qtest(valores ~ musculo | id,
+              data = SupraRep)
+
+library(rcompanion)
+PT = pairwiseMcnemar(valores ~ musculo | id,
+                     data   = SupraRep,
+                     test   = "exact",
+                     method = "BH",
+                     digits = 3)
+
+round(PT$Pairwise[5],4)
+
 
