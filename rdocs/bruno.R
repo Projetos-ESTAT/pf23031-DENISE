@@ -684,6 +684,16 @@ prop.test(x = InfraRepEst$Soma[c(4,6)], n = InfraRepEst$n[c(4,6)],correct = F)
 
 prop.test(x = InfraRepEst$Soma[c(5,6)], n = InfraRepEst$n[c(5,6)],correct = F)
 
+(options(scipen=999))
+p_load(rcompanion)
+PT = pairwiseMcnemar(valores ~ musculo | id,
+                     data   = InfraRep,
+                     test   = "exact",
+                     method = "BH",
+                     digits = 3)
+
+round(PT$Pairwise[5],4)
+
 # ---------------------------------------------------------------------- #
 # 3.0) adaptando o banco para fazer o teste de friedman ----
 
