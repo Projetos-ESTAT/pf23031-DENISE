@@ -34,6 +34,9 @@ SUPRA <- read_excel("banco/ESTAT.xlsx", sheet = "SUPRA",
 INFRA <- read_excel("banco/ESTAT.xlsx", sheet = "INFRA", 
                     range = "B2:M61", na = "*")
 
+# Removendo a obs. 43, conforme solicitação da cliente
+INFRA <- INFRA[-43,]
+
 AMP <- c(1,3,5,7,9,11)
 LAT <- c(2,4,6,8,10,12)
 
@@ -193,34 +196,6 @@ LSDInfraLat <- LSD.test(AnovaLatInfra, "as.factor(InfraLat$musculo)")
 LSDInfraLat
 
 kruskal.test(InfraLat$valores, as.factor(InfraLat$musculo)) # Não há diferença entre os músculos
-
-# agora fazendo o teste de friedman, que é mais apropriado para este caso
-p_load(ggpubr,rstatix)
-
-friedman <- InfraLat %>%
-  mutate(id = factor(rep(1:59,6)))
-
-friedman <- friedman[complete.cases(friedman), ] 
-
-friedman$id
-# I want remove all lines wich the corresponding factor friedman$id doesn't have exactly 6 appears in the data.
-table(friedman$id)
-# i want to remove the data wich dosen't appear exactly 6 times on above code
-completos <- c("2","3","34","")
-friedman |> filter(id == )
-
-  na.omit() %>%
-  friedman_test(valores ~ musculo | id)
-# muito NA no banco, dá erro.
-
-p_load(Skillings.Mack)
-Ski.Mack(InfraLat$valores,groups = InfraLat$musculo)
-# nao funciona
-
-p_load(PMCMRplus)
-skillingsMackTest(y=InfraLat$valores,groups = InfraLat$musculo,
-                  blocks = InfraLat$tipo)
-
 
 # --------------------------------------------------------------------------- #
 
@@ -583,7 +558,7 @@ ggplot(InfraRepEst) +
   geom_errorbar(aes(ymin=Mediana+qnorm(.025)*DP/sqrt(n), ymax=Mediana+qnorm(.975)*DP/sqrt(n), width=.2)) +
   labs(x = "Músculo", y = "Mediana") +
   theme_estat()
-ggsave("resultados/Infra/InfraRep_MedDP.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Infra/InfraRep_MedDP.pdf", width = 158, height = 93, units = "mm")
 
 # --------------------------------------------------------------------------- #
 
@@ -640,7 +615,7 @@ ggplot(InfraRepEst2) +
   labs(x = "Músculo", y = "Reprodutibilidade") +
   ylim(0.2,1)+
   theme_estat()
-ggsave("resultados/Infra/reprodutibilidade2.pdf", width = 158, height = 93, units = "mm")
+#ggsave("resultados/Infra/reprodutibilidade2.pdf", width = 158, height = 93, units = "mm")
 
 
 
