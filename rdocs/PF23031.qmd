@@ -348,3 +348,45 @@ mcnemar.test(tabela_contingencia)
 tabela_contingencia
 ```
 
+### Gráficos de Proporção
+
+```{r}
+teste_banco <- matrix(0, nrow = nrow(banco), ncol = ncol(banco))
+colnames(teste_banco) <- colnames(banco)
+teste_banco[!is.na(banco[, 1:13])] <- "Resposta"
+teste_banco[is.na(banco)] <- "Não resposta"
+teste_banco <- as.data.frame(teste_banco)
+teste_banco$Classe <- banco$Classe
+```
+
+
+```{r}
+dados_empilhados <- gather(teste_banco, key = "músculo", value = "valor", c(2, 4, 6), -Classe)
+
+# Crie um gráfico de colunas empilhadas das proporções de "cheio" e "vazio"
+ggplot(data = dados_empilhados, aes(x = Classe, fill = valor)) +
+  geom_bar(position = "fill") +
+  labs(title = "Gráfico de Colunas Empilhadas de Proporções",
+       x = "Classe",
+       y = "Proporção") +
+  theme_estat()+
+  facet_wrap(~músculo, scales = "free_y", nrow = 1) +
+  guides(fill = guide_legend(title = "Categoria"))
+ggsave("col1.pdf", width = 158, height = 93, units = "mm")
+
+```
+
+```{r}
+dados_empilhados <- gather(teste_banco, key = "músculo", value = "valor", c(8, 10, 12), -Classe)
+
+# Crie um gráfico de colunas empilhadas das proporções de "cheio" e "vazio"
+ggplot(data = dados_empilhados, aes(x = Classe, fill = valor)) +
+  geom_bar(position = "fill") +
+  labs(title = "Gráfico de Colunas Empilhadas de Proporções",
+       x = "Classe",
+       y = "Proporção") +
+  theme_estat()+
+  facet_wrap(~músculo, scales = "free_y", nrow = 1) +
+  guides(fill = guide_legend(title = "Categoria"))
+ggsave("col2.pdf", width = 158, height = 93, units = "mm")
+```
