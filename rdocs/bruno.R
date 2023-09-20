@@ -232,18 +232,6 @@ InfraAmp$valores2 <- (InfraAmp$valores ^ lambda - 1) / lambda
 # log
 InfraAmp$valores3 <- log(InfraAmp$valores)
 
-# r^2
-InfraAmp$valores4 <- sqrt(InfraAmp$valores)
-
-# lambda = -1
-
-InfraAmp$valores5 <- (InfraAmp$valores ^ -1 - 1) / -1
-
-# lambda = -.2
-
-InfraAmp$valores6 <- (InfraAmp$valores ^ -.2 - 1) / -.2
-
-
 #Anova
 AnovaAmpInfra <- aov(InfraAmp$valores2 ~ as.factor(InfraAmp$musculo))
 summary(AnovaAmpInfra)
@@ -346,192 +334,12 @@ ggplot(ResAmpInfra) +
   theme_estat()
 #ggsave("resultados/Infra/InfraAmp_log_Homo.pdf", width = 158, height = 93, units = "mm")
 
-# r^2 ----
-
-#Anova
-AnovaAmpInfra <- aov(InfraAmp$valores4 ~ as.factor(InfraAmp$musculo))
-summary(AnovaAmpInfra)
-TukeyHSD(AnovaAmpInfra)
-
-#Pressupostos (Usar resíduos Studentizados)
-Res <- rstudent(AnovaAmpInfra)
-yfit <- fitted(AnovaAmpInfra)
-ResAmpInfra <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaAmpInfra$model[[2]])
-
-#Normalidade
-shapiro.test(ResAmpInfra$Res)
-#Verificar se tem o formato aproximado da Normal
-hist(ResAmpInfra$Res)
-ggplot(ResAmpInfra) +
-  aes(sample = Res) +
-  stat_qq(colour = "#A11D21") +
-  stat_qq_line(linewidth = 0.8) + 
-  labs(
-    x = "Quantis da Teóricos da Normal",
-    y = "Quantis da Amostra"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
-
-#Independencia
-#dwtest(AnovaAmpInfra) #Tem algo de errado com esse teste
-
-ggplot(ResAmpInfra) +
-  aes(x = 1:length(Res), y = Res) +
-  geom_point(colour = "#A11D21", size = 3) +
-  labs(
-    x = "Observação",
-    y = "Resíduos Studentizados"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
-
-#Homocedasticidade
-LeveneTest(InfraAmp$valores ~ InfraAmp$musculo)
-ggplot(ResAmpInfra) +
-  aes(x = Musculo, y = Res) +
-  geom_point(colour = "#A11D21", size = 3) +
-  labs(
-    x = "Musculo",
-    y = "Resíduos Studentizados"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
-
-# lambda = -1 ----
-
-#Anova
-AnovaAmpInfra <- aov(InfraAmp$valores5 ~ as.factor(InfraAmp$musculo))
-summary(AnovaAmpInfra)
-TukeyHSD(AnovaAmpInfra)
-
-#Pressupostos (Usar resíduos Studentizados)
-Res <- rstudent(AnovaAmpInfra)
-yfit <- fitted(AnovaAmpInfra)
-ResAmpInfra <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaAmpInfra$model[[2]])
-
-#Normalidade
-shapiro.test(ResAmpInfra$Res)
-#Verificar se tem o formato aproximado da Normal
-hist(ResAmpInfra$Res)
-ggplot(ResAmpInfra) +
-  aes(sample = Res) +
-  stat_qq(colour = "#A11D21") +
-  stat_qq_line(linewidth = 0.8) + 
-  labs(
-    x = "Quantis da Teóricos da Normal",
-    y = "Quantis da Amostra"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
-
-#Independencia
-#dwtest(AnovaAmpInfra) #Tem algo de errado com esse teste
-
-ggplot(ResAmpInfra) +
-  aes(x = 1:length(Res), y = Res) +
-  geom_point(colour = "#A11D21", size = 3) +
-  labs(
-    x = "Observação",
-    y = "Resíduos Studentizados"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
-
-#Homocedasticidade
-LeveneTest(InfraAmp$valores ~ InfraAmp$musculo)
-bartlett.test(InfraAmp$valores, InfraAmp$musculo)
-ggplot(ResAmpInfra) +
-  aes(x = Musculo, y = Res) +
-  geom_point(colour = "#A11D21", size = 3) +
-  labs(
-    x = "Musculo",
-    y = "Resíduos Studentizados"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
-
-# lambda = -.2 ----
-
-#Anova
-AnovaAmpInfra <- aov(InfraAmp$valores6 ~ as.factor(InfraAmp$musculo))
-summary(AnovaAmpInfra)
-TukeyHSD(AnovaAmpInfra)
-
-#Pressupostos (Usar resíduos Studentizados)
-Res <- rstudent(AnovaAmpInfra)
-yfit <- fitted(AnovaAmpInfra)
-ResAmpInfra <- data.frame(Res=Res,yfit=yfit, Musculo = AnovaAmpInfra$model[[2]])
-
-#Normalidade
-shapiro.test(ResAmpInfra$Res)
-#Verificar se tem o formato aproximado da Normal
-hist(ResAmpInfra$Res)
-ggplot(ResAmpInfra) +
-  aes(sample = Res) +
-  stat_qq(colour = "#A11D21") +
-  stat_qq_line(linewidth = 0.8) + 
-  labs(
-    x = "Quantis da Teóricos da Normal",
-    y = "Quantis da Amostra"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Norm.pdf", width = 158, height = 93, units = "mm")
-
-#Independencia
-#dwtest(AnovaAmpInfra) #Tem algo de errado com esse teste
-
-ggplot(ResAmpInfra) +
-  aes(x = 1:length(Res), y = Res) +
-  geom_point(colour = "#A11D21", size = 3) +
-  labs(
-    x = "Observação",
-    y = "Resíduos Studentizados"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Ind.pdf", width = 158, height = 93, units = "mm")
-
-#Homocedasticidade
-LeveneTest(InfraAmp$valores6 ~ InfraAmp$musculo)
-ggplot(ResAmpInfra) +
-  aes(x = Musculo, y = Res) +
-  geom_point(colour = "#A11D21", size = 3) +
-  labs(
-    x = "Musculo",
-    y = "Resíduos Studentizados"
-  ) +
-  theme_estat()
-#ggsave("resultados/Infra/InfraAmp_Homo.pdf", width = 158, height = 93, units = "mm")
-
-
-# ---------------------------------------------------------------------------- #
-
-# Pressupostos de normalidade rejeitado sob (quase) qualquer transformação. Homocedasticidade aceita.
-
-#estimações
-for (i in unique(InfraAmp$musculo)) {
-  a <- shapiro.test(InfraAmp$valores[InfraAmp$musculo==i])$p.value
-  b <- shapiro.test(log(InfraAmp$valores[InfraAmp$musculo==i]))$p.value
-  if(a<0.05 & b>0.05)
-  {print(paste(str(i), "Normal apenas com transformação log"))}
-  if(a<0.05 & b<0.05)
-  {print(paste(str(i), "Não Normal mesmo com transformação log"))}
-}
-
 # Análise não paramétrica ----
 
-kruskal.test(InfraAmp$valores, as.factor(InfraAmp$musculo))
-
-# Conover test
-#ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "bonferroni")
+# kruskal.test(InfraAmp$valores, as.factor(InfraAmp$musculo))
 
 # Usando a correção de Benjamini & Hochberg (1995) ----
 ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "BH")
-
-# Usando a correção de Benjamini & Yekutieli (2001)
-#ConoverTest(InfraAmp$valores, as.factor(InfraAmp$musculo), method = "BY")
-
-# Usar a de BH mesmo.
 
 # --------------------------------------------------------------------------- #
 
@@ -543,11 +351,11 @@ InfraRep <- Infra |>
 #na mão
 InfraRepEst <- InfraRep %>%
   group_by(musculo) %>%
-  summarise(Mediana = median(valores),
-            Soma = sum(valores),
+  summarise(Mediana = median(valores,na.rm=T),
+            Soma = sum(valores,na.rm=T),
             n = n(),
-            Var = var(valores),
-            DP = sd(valores),
+            Var = var(valores,na.rm=T),
+            DP = sd(valores,na.rm=T),
             linf = Mediana - qnorm(.975)*DP/sqrt(n),
             lsup = Mediana + qnorm(.975)*DP/sqrt(n))
 
@@ -569,6 +377,7 @@ InfraRep <- Infra %>%
 InfraRep$valores <- ifelse(is.na(InfraRep$valores), 0, 1)
 InfraRep$id <- factor(rep(1:59,each=6))
 
+p_load(rstatix)
 cochran_qtest(InfraRep, valores ~ musculo|id)
 
 #na mão
@@ -616,8 +425,6 @@ ggplot(InfraRepEst2) +
   ylim(0.2,1)+
   theme_estat()
 #ggsave("resultados/Infra/reprodutibilidade2.pdf", width = 158, height = 93, units = "mm")
-
-
 
 PropInfraRep <- prop.test(x = InfraRepEst$Soma, n = InfraRepEst$n)
 PropInfraRep
@@ -670,7 +477,7 @@ PT = pairwiseMcnemar(valores ~ musculo | id,
 round(PT$Pairwise[5],4)
 
 # ---------------------------------------------------------------------- #
-# 3.0) adaptando o banco para fazer o teste de friedman ----
+# 3.0) adaptando o banco para fazer o teste de friedman para Latência ----
 
 musculo <- c("SCMi","SCMc","TRAPi","TRAPc","SCi","SCc")
 
@@ -715,7 +522,7 @@ df |> friedman_test(valores ~ musculo | id)
 
 
 # ---------------------------------------------------------------------- #
-# 4.0) adaptando o banco para fazer o teste de friedman ----
+# 4.0) adaptando o banco para fazer o teste de friedman para Amplitude ----
 
 musculo <- c("SCMi","SCMc","TRAPi","TRAPc","SCi","SCc")
 
@@ -759,4 +566,3 @@ df$id <- factor(df$id)
 df |> friedman_test(valores ~ musculo | id)
 
 # ---------------------------------------------------------------------------- #
-# teste de cochran
