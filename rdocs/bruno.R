@@ -91,6 +91,36 @@ p_load(DescTools, asbio, gridExtra, lmtest,agricolae)
 
 Banco <- readRDS("banco/df.rds")
 
+# --------------------------------------------------------------------------- #
+# 2.0.1) Apêndice - Análise exploratória das colunas ----
+p_load(skimr,xtable)
+
+#skim(Banco)
+
+INFRA <- read_excel("banco/ESTAT.xlsx", sheet = "INFRA", 
+                    range = "B2:M61", na = "*")
+
+# Removendo a obs. 43, conforme solicitação da cliente
+INFRA <- INFRA[-43,]
+
+# Músculos - Amp ---- 
+AMP <- INFRA %>%
+  select(1,3,5,7,9,11)
+
+colnames(AMP) <- musculo
+
+descritiva(AMP)
+
+# Músculos - Lat ---- 
+LAT <- INFRA %>%
+  select(2,4,6,8,10,12)
+
+colnames(LAT) <- musculo
+
+descritiva(LAT)
+
+# --------------------------------------------------------------------------- #
+
 Infra <- Banco %>%
   filter(tipo == "infra")
 

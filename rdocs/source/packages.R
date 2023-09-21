@@ -3,7 +3,8 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
   tidyverse, data.table,
   readxl, readr, ggcorrplot, cowplot,
-  RColorBrewer, scales, nortest, xlsx
+  RColorBrewer, scales, nortest, xlsx,
+  skimr,xtable
 )
 windowsFonts(Arial=windowsFont("sans"))
 
@@ -54,3 +55,28 @@ vector_frequencies <- function(vector) {
   return(frequency)
 }
 
+descritiva <- function(dados){
+  st_amp <- skim(dados)
+  
+  st_amp <- as.data.frame(st_amp)
+  st_amp <- st_amp %>%
+    select(!c(1,12)) %>%
+    mutate(
+      complete_rate = round(complete_rate,2),
+      numeric.mean = round(numeric.mean,2),
+      numeric.sd = round(numeric.sd,2),
+      numeric.p0 = round(numeric.p0,2),
+      numeric.p25 = round(numeric.p25,2),
+      numeric.p50 = round(numeric.p50,2),
+      numeric.p75 = round(numeric.p75,2),
+      numeric.p100 = round(numeric.p100,2),
+      di = numeric.p75-numeric.p25,
+      di = round(di,2)
+    )
+  
+  colnames(st_amp) <- c("Músculo","Quantidade de NA's",
+                        "% preenchimento","Média","Desvio padrão",
+                        "Mínimo","q25","Mediana","q75","Máximo","Distância Interquartílica")
+  
+  print(xtable(st_amp, type = "latex"))
+}
