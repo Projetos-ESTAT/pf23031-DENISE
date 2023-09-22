@@ -78,5 +78,5 @@ descritiva <- function(dados){
                         "% preenchimento","Média","Desvio padrão",
                         "Mínimo","q25","Mediana","q75","Máximo","Distância Interquartílica")
   
-  print(xtable(st_amp, type = "latex"))
+  print(xtable(st_amp, type = "latex"), include.rownames=FALSE)
 }
