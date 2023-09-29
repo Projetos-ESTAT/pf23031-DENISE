@@ -1,5 +1,6 @@
 source("rdocs/source/packages.R")
-pacman::p_load(DescTools, asbio, gridExtra, lmtest,agricolae,rstatix,ez,RVAideMemoire)
+pacman::p_load(DescTools, asbio, gridExtra, lmtest,agricolae,rstatix,ez,RVAideMemoire,
+               skimr,xtable)
 
 # ---------------------------------------------------------------------------- #
 
@@ -31,11 +32,17 @@ Supra <- Banco %>% filter(tipo == "supra")
 
 
 
-
-
 #Latência (Falta teste para Homocedasticidade)
 SupraLat <- Supra %>% filter(amp_lat == "LAT")
+
 #Exploratória
+for (i in unique(SupraLat$musculo)){
+  print(i)
+  print(round(summary(SupraLat$valores[SupraLat$musculo==i]),digits = 2))
+  print(round(sqrt(var(SupraLat$valores[SupraLat$musculo==i],na.rm = T)),digits = 2))
+  print(round(quantile(SupraLat$valores[SupraLat$musculo==i],probs = 0.75,na.rm = T)-quantile(SupraLat$valores[SupraLat$musculo==i],probs = 0.25,na.rm = T),digits = 2))
+}
+
 #Sem transformação
 ggplot(SupraLat) +  aes(x = musculo,y = valores) +
   geom_boxplot(fill = c("#A11D21"), width = 0.5) +
@@ -192,6 +199,13 @@ ggplot(SupraLatEst) +
 #Amplitude (Precisa de uma análise do log)
 SupraAmp <- Supra %>% filter(amp_lat == "AMP")
 #Exploratória
+for (i in unique(SupraAmp$musculo)){
+  print(i)
+  print(round(summary(SupraAmp$valores[SupraAmp$musculo==i]),digits = 2))
+  print(round(sqrt(var(SupraAmp$valores[SupraAmp$musculo==i],na.rm = T)),digits = 2))
+  print(round(quantile(SupraAmp$valores[SupraAmp$musculo==i],probs = 0.75,na.rm = T)-quantile(SupraAmp$valores[SupraAmp$musculo==i],probs = 0.25,na.rm = T),digits = 2))
+}
+
 #Sem transformação
 ggplot(SupraAmp) +  aes(x = musculo,y = valores) +
   geom_boxplot(fill = c("#A11D21"), width = 0.5) +
