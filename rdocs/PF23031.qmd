@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-## Carregando Pacotes
+### Carregando Pacotes
 
 ```{r}
 library("tidyverse")
@@ -116,12 +116,15 @@ ggplot(data = gather(banco, key = "músculo", value = "valor", c(8, 10, 12), -Cl
    facet_wrap(~músculo, scales = "free_y", nrow = 1)
 ggsave("box2.pdf", width = 158, height = 93, units = "mm")
 ```
+
 ### SCMI
 
 #### Amplitude
+
 ```{r}
 wilcox.test(supra$SCMI_AMP, infra$SCMI_AMP, paired = T, correct = F)
 ```
+
 ```{r}
 wilcox.test(supra$SCMI_AMP, infra$SCMI_AMP, paired = T, correct = F, alternative = "less")
 ```
@@ -135,7 +138,9 @@ wilcox.test(supra$SCMI_LAT, infra$SCMI_LAT, paired = F, correct = F)
 Os dois não são equivalentes quanto à latência
 
 ### SCMC
+
 #### Amplitude
+
 ```{r}
 wilcox.test(supra$SCMC_AMP, infra$SCMC_AMP, paired = T, correct = F)
 ```
@@ -151,6 +156,7 @@ Os dois são equivalentes quanto à latência
 ### TRAPi
 
 #### Amplitude
+
 ```{r}
 wilcox.test(supra$TRAPi_AMP, infra$TRAPi_AMP, paired = T, correct = F)
 ```
@@ -176,6 +182,7 @@ as médias de latência são equivalentes
 ### TRAPc
 
 #### Amplitude
+
 ```{r}
 wilcox.test(supra$TRAPc_AMP, infra$TRAPc_AMP, paired = T, correct = F)
 ```
@@ -201,6 +208,7 @@ as médias de latência são equivalentes
 ### SCi
 
 #### Amplitude
+
 ```{r}
 wilcox.test(supra$SCi_AMP, infra$SCi_AMP, paired = T, correct = F)
 ```
@@ -226,6 +234,7 @@ as médias de latência são equivalentes
 ### SCc
 
 #### Amplitude
+
 ```{r}
 wilcox.test(supra$SCc_AMP, infra$SCc_AMP, paired = T, correct = F)
 ```
@@ -233,7 +242,6 @@ wilcox.test(supra$SCc_AMP, infra$SCc_AMP, paired = T, correct = F)
 ```{r}
 wilcox.test(supra$SCc_AMP, infra$SCc_AMP, paired = T, correct = F, alternative = "less")
 ```
-
 
 os dois não são equivalentes quanto à amplitude
 
@@ -270,7 +278,6 @@ teste_supra[!is.na(supra)] <- "cheio"
 teste_supra[is.na(supra)] <- "vazio"
 teste_supra <- as.data.frame(teste_supra)
 ```
-
 
 ```{r}
 tabela_contingencia <- table(infra = c(teste_infra$SCMI_AMP, "vazio"), supra = c(teste_supra$SCMI_AMP, "vazio"))
@@ -312,6 +319,7 @@ tabela_contingencia
 ```
 
 #### TRAPi
+
 ```{r}
 mcnemar.test(matrix(c(rep_infra$TRAPi_AMP, rep_supra$TRAPi_AMP), nrow = 2))
 ```
@@ -322,6 +330,7 @@ tabela_contingencia <- table(infra = teste_infra$TRAPi_AMP, supra = teste_supra$
 mcnemar.test(tabela_contingencia)
 tabela_contingencia
 ```
+
 #### TRAPc
 
 ```{r}
@@ -330,6 +339,7 @@ tabela_contingencia <- table(infra = teste_infra$TRAPc_AMP, supra = teste_supra$
 mcnemar.test(tabela_contingencia)
 tabela_contingencia
 ```
+
 #### SCi
 
 ```{r}
@@ -358,7 +368,6 @@ teste_banco[is.na(banco)] <- "Não resposta"
 teste_banco <- as.data.frame(teste_banco)
 teste_banco$Classe <- banco$Classe
 ```
-
 
 ```{r}
 dados_empilhados <- gather(teste_banco, key = "músculo", value = "valor", c(2, 4, 6), -Classe)
